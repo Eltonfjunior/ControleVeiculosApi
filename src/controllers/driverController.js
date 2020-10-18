@@ -129,10 +129,6 @@ const removeAll = async (req, res) => {
   }
 };
 
-async function findDriveById(id) {
-  return await Driver.findById({ _id: id });
-}
-
 export default {
   create,
   findAll,
@@ -140,5 +136,4 @@ export default {
   update,
   remove,
   removeAll,
-  findDriveById,
 };

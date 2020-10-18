@@ -138,10 +138,6 @@ const removeAll = async (req, res) => {
   }
 };
 
-async function findCarById(id) {
-  return await Car.findById({ _id: id });
-}
-
 export default {
   create,
   findAll,
@@ -149,5 +145,4 @@ export default {
   update,
   remove,
   removeAll,
-  findCarById,
 };

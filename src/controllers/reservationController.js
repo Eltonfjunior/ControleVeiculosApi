@@ -16,32 +16,22 @@ const create = async (req, res) => {
   });
 
   try {
-    const car = carController.findCarById(req.body.idCar);
-    const driver = driverController.findDriveById(req.body.idDriver);
     const searchReservationDriver = await searchDriverReservationActive(
       req.body.idDriver
     );
     const searchReservationCar = await searchCarReservationActive(
       req.body.idCar
     );
-    console.log('DRIVER', searchReservationDriver);
-    //console.log('CAR', searchReservationCar);
 
-    if (car && driver) {
-      if (searchReservationDriver && searchReservationCar) {
-        res.send({ message: 'Veiculo em uso e motorista em reserva!' });
-      } else if (searchReservationDriver && !searchReservationCar) {
-        res.send({ message: 'Motorista em reserva!' });
-      } else if (!searchReservationDriver && searchReservationCar) {
-        res.send({ message: 'Veiculo em uso!' });
-      } else {
-        const data = await reservetion.save();
-        res.send({ message: 'Reserva inserida com sucesso!' });
-      }
+    if (searchReservationDriver && searchReservationCar) {
+      res.send({ message: 'Veiculo em uso e motorista em reserva!' });
+    } else if (searchReservationDriver && !searchReservationCar) {
+      res.send({ message: 'Motorista em reserva!' });
+    } else if (!searchReservationDriver && searchReservationCar) {
+      res.send({ message: 'Veiculo em uso!' });
     } else {
-      res.send({
-        message: 'Erro ao salvar informacao! Automovel ou motorista invalidos',
-      });
+      const data = await reservetion.save();
+      res.send({ message: 'Reserva inserida com sucesso!' });
     }
   } catch (error) {
     res
@@ -106,36 +96,34 @@ const update = async (req, res) => {
 async function searchDriverReservationActive(idDriver) {
   try {
     const data = await Reservation.find({
-      $and: [{ idDriver: idDriver }, { status: true }],
+      idDriver: idDriver,
+      status: true,
+      endDate: null,
     });
-    console.log('Function DRIVER', idDriver);
-    if (!data) {
+    if (data.length < 1) {
       return false;
     } else {
       return true;
     }
   } catch (error) {
-    console.log('catch', error);
-    return false;
+    return true;
   }
 }
 
 async function searchCarReservationActive(idCar) {
-  let condition = {
-    idCar: idCar,
-    status: true,
-  };
-
   try {
-    const data = await Reservation.find(condition);
-    console.log('Function CAR', data);
-    if (!data) {
+    const data = await Reservation.find({
+      idCar: idCar,
+      status: true,
+      endDate: null,
+    });
+    if (data.length < 1) {
       return false;
     } else {
       return true;
     }
   } catch (error) {
-    return false;
+    return true;
   }
 }
 

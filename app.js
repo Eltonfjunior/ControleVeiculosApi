@@ -1,10 +1,10 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import { reservationRouter } from './routes/reservationRouter.js';
-import { carRouter } from './routes/carRouter.js';
-import { driverRouter } from './routes/driverRouter.js';
-import { db } from './models/index.js';
+import { reservationRouter } from './src/routes/reservationRouter.js';
+import { carRouter } from './src/routes/carRouter.js';
+import { driverRouter } from './src/routes/driverRouter.js';
+import { db } from './src/models/index.js';
 import dotenv from 'dotenv';
 
 (async () => {
