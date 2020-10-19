@@ -16,6 +16,8 @@ const create = async (req, res) => {
   });
 
   try {
+    let driver = await driverController.findDriveById(req.body.idDriver);
+    let car = await carController.findCarById(req.body.idCar);
     const searchReservationDriver = await searchDriverReservationActive(
       req.body.idDriver
     );
@@ -23,15 +25,21 @@ const create = async (req, res) => {
       req.body.idCar
     );
 
-    if (searchReservationDriver && searchReservationCar) {
-      res.send({ message: 'Veiculo em uso e motorista em reserva!' });
-    } else if (searchReservationDriver && !searchReservationCar) {
-      res.send({ message: 'Motorista em reserva!' });
-    } else if (!searchReservationDriver && searchReservationCar) {
-      res.send({ message: 'Veiculo em uso!' });
+    //Verifica se o Veiculo e o Motorista existem
+    if (driver && car) {
+      //Verifica se veiculo e motorista já estão em reserva.
+      if (searchReservationDriver && searchReservationCar) {
+        res.send({ message: 'Veiculo em uso e motorista em reserva!' });
+      } else if (searchReservationDriver && !searchReservationCar) {
+        res.send({ message: 'Motorista em reserva!' });
+      } else if (!searchReservationDriver && searchReservationCar) {
+        res.send({ message: 'Veiculo em uso!' });
+      } else {
+        const data = await reservetion.save();
+        res.send({ message: 'Reserva inserida com sucesso!' });
+      }
     } else {
-      const data = await reservetion.save();
-      res.send({ message: 'Reserva inserida com sucesso!' });
+      res.send({ message: 'Motorista ou veiculo não estão cadastrados!' });
     }
   } catch (error) {
     res
@@ -48,11 +56,12 @@ const findAll = async (req, res) => {
     if (!data) {
       res.status(404).send({ message: 'Nao encontrado nenhuma reserva!' });
     } else {
+      //Insere Atributos de veiculos e motoristas
       for (let i = 0; i < data.length; i++) {
-        //let driver = await driverController.findDriveById(data[i].idDriver);
-        //let car = await carController.findCarById(data[i].idCar);
-        //data[i].car = car;
-        //data[i].driver = driver;
+        let driver = await driverController.findDriveById(data[i].idDriver);
+        let car = await carController.findCarById(data[i].idCar);
+        data[i].car = car;
+        data[i].driver = driver;
       }
 
       res.send(data);
@@ -82,7 +91,7 @@ const update = async (req, res) => {
     if (!data) {
       res.status(404).send({
         message:
-          'Nao encontrado nenhuma reserva com id: ' + id + 'para atualizar!',
+          'Nao encontrado nenhuma reserva com id: ' + id + 'para finalizar!',
       });
     } else {
       res.send(data);
@@ -93,6 +102,7 @@ const update = async (req, res) => {
   }
 };
 
+//Busca motoristas que já possuem reserva.
 async function searchDriverReservationActive(idDriver) {
   try {
     const data = await Reservation.find({
@@ -110,6 +120,7 @@ async function searchDriverReservationActive(idDriver) {
   }
 }
 
+//Busca veiculos que já estão em reserva.
 async function searchCarReservationActive(idCar) {
   try {
     const data = await Reservation.find({

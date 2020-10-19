@@ -1,4 +1,6 @@
 import { db } from '../models/index.js';
+import pkg from 'mongodb';
+const { ObjectID } = pkg;
 
 const Car = db.carModel;
 
@@ -138,6 +140,11 @@ const removeAll = async (req, res) => {
   }
 };
 
+//Busca e retorna Carro por ID
+async function findCarById(id) {
+  return await Car.findById({ _id: ObjectID(id) }, { _id: 0, __v: 0 });
+}
+
 export default {
   create,
   findAll,
@@ -145,4 +152,5 @@ export default {
   update,
   remove,
   removeAll,
+  findCarById,
 };

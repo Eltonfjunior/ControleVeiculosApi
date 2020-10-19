@@ -1,4 +1,6 @@
 import { db } from '../models/index.js';
+import pkg from 'mongodb';
+const { ObjectID } = pkg;
 
 const Driver = db.driverModel;
 
@@ -42,7 +44,7 @@ const findAll = async (req, res) => {
   }
 };
 
-//Busca veículo por ID
+//Busca motorista por ID
 const findOne = async (req, res) => {
   const id = req.query.id;
   try {
@@ -61,7 +63,7 @@ const findOne = async (req, res) => {
   }
 };
 
-//Atualizarveículo.
+//Atualiza motorista.
 const update = async (req, res) => {
   if (!req.body) {
     return res.status(400).send({
@@ -91,7 +93,7 @@ const update = async (req, res) => {
   }
 };
 
-//Remove Um veículo.
+//Remove Um motorista.
 const remove = async (req, res) => {
   const id = req.query.id;
   try {
@@ -112,7 +114,7 @@ const remove = async (req, res) => {
   }
 };
 
-//Remove todas... Ok.
+//Remove os motoristas.
 const removeAll = async (req, res) => {
   try {
     const data = await Driver.deleteMany();
@@ -129,6 +131,11 @@ const removeAll = async (req, res) => {
   }
 };
 
+//Busca e retorna motorista por ID.
+async function findDriveById(id) {
+  return await Driver.findById({ _id: ObjectID(id) }, { _id: 0, __v: 0 });
+}
+
 export default {
   create,
   findAll,
@@ -136,4 +143,5 @@ export default {
   update,
   remove,
   removeAll,
+  findDriveById,
 };
